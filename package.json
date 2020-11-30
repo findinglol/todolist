@@ -1,0 +1,24 @@
+{
+  "name": "todolist",
+  "version": "1.0.0",
+  "description": "To do list using EJS templating",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/findinglol/todolist.git"
+  },
+  "author": "Mayank Kakkar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/findinglol/todolist/issues"
+  },
+  "homepage": "https://github.com/findinglol/todolist#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.1.5",
+    "express": "^4.17.1"
+  }
+}
