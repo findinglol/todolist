@@ -1,10 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const { static } = require("express");
 
 const app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(static('static'));
 let items = ["Learn EJS", "Learn git"];
 
 app.get("/", (req, res) => {
