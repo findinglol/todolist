@@ -37,4 +37,9 @@ app.get("/work", (req, res) => {
     res.render('list', { pageTitle: 'Work', items: work });
 });
 
+app.get("/about", (req, res) => {
+    res.render('about');
+});
+
+
 app.listen(3000, () => console.log("Sever running on Port 3000"));
