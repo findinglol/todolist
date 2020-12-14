@@ -4,11 +4,12 @@ const { static } = require("express");
 const dateUtility = require(__dirname + '/date.js');
 const mongoose = require('mongoose');
 const app = express();
+const _ = require('lodash');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(static('static'));
 
-mongoose.connect('mongodb://localhost:27017/todolistDB', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/todolistDB', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 
 const itemsSchema = {
     name: String
@@ -73,7 +74,6 @@ app.post("/", (req, res) => {
             if (err) {
                 console.log("Error in finding the custom list from Mongo Query");
             } else {
-                console.log(foundList);
                 foundList.items.push(item);
                 foundList.save();
                 res.redirect("/" + listName);
@@ -84,18 +84,30 @@ app.post("/", (req, res) => {
 
 app.post("/delete", (req, res) => {
     const ItemId = req.body.checkbox;
-    Item.findByIdAndDelete(ItemId, (err) => {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("Succesful Delete");
-        }
-    })
-    res.redirect("/");
+    const listName = req.body.listName;
+
+    if (listName === 'Today') {
+        Item.findByIdAndDelete(ItemId, (err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Succesful Delete");
+            }
+        });
+        res.redirect("/");
+    } else {
+        List.findOneAndUpdate({ name: listName }, { $pull: { items: { _id: ItemId } } }, (err, foundList) => {
+            if (!err) {
+                res.redirect("/" + listName);
+            }
+        });
+    }
+
 })
 
 app.get("/:customListName", (req, res) => {
-    const customListName = req.params.customListName
+    const customListName = _.capitalize(req.params.customListName);
+
 
     List.findOne({ name: customListName }, (err, foundList) => {
         if (!err) {
