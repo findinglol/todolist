@@ -30,10 +30,16 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
+const listSchema = {
+    name: String,
+    items: [itemsSchema]
+};
+
+const List = mongoose.model("List", listSchema);
 
 
 app.get("/", (req, res) => {
-    let day = dateUtility.getDay();
+    let day = 'Today';
     Item.find({}, (err, foundItems) => {
         if (err) {
             console.log(err)
@@ -54,21 +60,26 @@ app.get("/", (req, res) => {
 
 app.post("/", (req, res) => {
     let itemName = req.body.newItem;
-
+    const listName = req.body.submitButton;
     const item = new Item({
         name: itemName
     });
-
-    item.save();
-    res.redirect("/");
-
-    // if (req.body.submitButton === 'Work') {
-    //     work.push(item);
-    //     res.redirect("/work");
-    // } else {
-    //     items.push(item);
-    //     res.redirect("/");
-    // }
+    let day = 'Today';
+    if (listName === day) {
+        item.save();
+        res.redirect("/");
+    } else {
+        List.findOne({ name: listName }, (err, foundList) => {
+            if (err) {
+                console.log("Error in finding the custom list from Mongo Query");
+            } else {
+                console.log(foundList);
+                foundList.items.push(item);
+                foundList.save();
+                res.redirect("/" + listName);
+            }
+        });
+    }
 });
 
 app.post("/delete", (req, res) => {
@@ -83,8 +94,24 @@ app.post("/delete", (req, res) => {
     res.redirect("/");
 })
 
-app.get("/work", (req, res) => {
-    res.render('list', { pageTitle: 'Work', items: work });
+app.get("/:customListName", (req, res) => {
+    const customListName = req.params.customListName
+
+    List.findOne({ name: customListName }, (err, foundList) => {
+        if (!err) {
+            if (!foundList) {
+                const list = new List({
+                    name: customListName,
+                    items: defaultItems
+                });
+                list.save();
+                res.redirect("/" + customListName);
+            } else {
+                res.render('list', { pageTitle: foundList.name, items: foundList.items });
+            }
+        }
+    })
+
 });
 
 app.get("/about", (req, res) => {
