@@ -1,17 +1,23 @@
 <%- include("header") %>
-<div class="box" id="heading">
-    <h1><%= pageTitle %> </h1>
-</div>
-<div class="box">
-    <% for( let index = 0; index < items.length; index++ ) { %>
-    <div class="item">
-        <input type="checkbox">
-        <p><%= items[index] %> </p>
+    <div class="box" id="heading">
+        <h1>
+            <%= pageTitle %>
+        </h1>
     </div>
-    <% } %>
-    <form class="item" action="/" method="POST">
-        <input type="text" placeholder="Add To Do" autocomplete="off" name="newItem" id="newItem">
-        <button type="submit" name="submitButton" value=<%= pageTitle %>>+</button>
-    </form>
-</div>
-<%- include("footer") %>
+    <div class="box">
+        <% items.forEach(item=> { %>
+            <form action="/delete" method="POST">
+                <div class="item">
+                    <input type="checkbox" name="checkbox" value="<%= item._id %>" onchange="this.form.submit()">
+                    <p>
+                        <%= item.name %>
+                    </p>
+                </div>
+            </form>
+            <% }) %>
+                <form class="item" action="/" method="POST">
+                    <input type="text" placeholder="Add To Do" autocomplete="off" name="newItem" id="newItem">
+                    <button type="submit" name="submitButton" value=<%=pageTitle %>>+</button>
+                </form>
+    </div>
+    <%- include("footer") %>
